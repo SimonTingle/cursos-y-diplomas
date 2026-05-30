@@ -1,0 +1,87 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ============================================================
+   ACES Point — futuristic glassmorphism theme
+   ============================================================ */
+:root {
+    --accent: #6366f1;
+    --accent-2: #22d3ee;
+}
+
+@layer base {
+    body {
+        @apply text-slate-100 antialiased;
+        background:
+            radial-gradient(1200px 600px at 12% -10%, rgba(99, 102, 241, 0.25), transparent 60%),
+            radial-gradient(1000px 500px at 100% 0%, rgba(34, 211, 238, 0.18), transparent 55%),
+            radial-gradient(900px 700px at 50% 120%, rgba(168, 85, 247, 0.18), transparent 60%),
+            #070b1a;
+        min-height: 100vh;
+    }
+}
+
+@layer components {
+    .glass {
+        @apply rounded-2xl border border-white/10 bg-white/5 backdrop-blur-xl;
+        box-shadow: 0 10px 40px -12px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+    }
+    .glass-input {
+        @apply w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-sm text-slate-100
+               placeholder-slate-400 outline-none transition focus:border-indigo-400/60
+               focus:ring-2 focus:ring-indigo-500/30;
+    }
+    .glass-label {
+        @apply mb-1 block text-xs font-medium uppercase tracking-wider text-slate-400;
+    }
+    .btn-primary {
+        @apply inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2 text-sm font-semibold
+               text-white transition disabled:opacity-50;
+        background: linear-gradient(135deg, var(--accent), #8b5cf6 55%, var(--accent-2));
+        box-shadow: 0 8px 24px -8px rgba(99, 102, 241, 0.7);
+    }
+    .btn-primary:hover { filter: brightness(1.08); }
+    .btn-ghost {
+        @apply inline-flex items-center justify-center gap-2 rounded-xl border border-white/10
+               bg-white/5 px-4 py-2 text-sm font-medium text-slate-200 transition hover:bg-white/10;
+    }
+}
+
+/* ---- FullCalendar dark restyle ---- */
+.fc {
+    --fc-border-color: rgba(255, 255, 255, 0.08);
+    --fc-page-bg-color: transparent;
+    --fc-neutral-bg-color: rgba(255, 255, 255, 0.03);
+    --fc-today-bg-color: rgba(99, 102, 241, 0.14);
+    --fc-now-indicator-color: #22d3ee;
+    color: #e2e8f0;
+}
+.fc .fc-toolbar-title { @apply text-xl font-semibold tracking-tight text-white; }
+.fc .fc-col-header-cell-cushion,
+.fc .fc-daygrid-day-number,
+.fc .fc-timegrid-axis-cushion,
+.fc .fc-timegrid-slot-label-cushion { @apply text-slate-400 no-underline; }
+.fc .fc-button {
+    @apply border-0 text-sm font-medium capitalize text-slate-200;
+    background: rgba(255, 255, 255, 0.06) !important;
+    border-radius: 0.6rem !important;
+    box-shadow: none !important;
+    padding: 0.4rem 0.7rem !important;
+}
+.fc .fc-button:hover { background: rgba(255, 255, 255, 0.12) !important; }
+.fc .fc-button-primary:not(:disabled).fc-button-active,
+.fc .fc-button-primary:not(:disabled):active {
+    background: linear-gradient(135deg, var(--accent), #8b5cf6) !important;
+    color: #fff !important;
+}
+.fc .fc-button-primary:focus { box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.3) !important; }
+.fc .fc-daygrid-day.fc-day-today,
+.fc .fc-timegrid-col.fc-day-today { background: var(--fc-today-bg-color); }
+.fc .fc-event {
+    @apply rounded-md border-0 px-1 text-xs font-medium;
+    box-shadow: 0 2px 8px -2px rgba(0, 0, 0, 0.5);
+}
+.fc .fc-event:hover { filter: brightness(1.1); cursor: pointer; }
+.fc-theme-standard td, .fc-theme-standard th { border-color: var(--fc-border-color); }
+.fc .fc-scrollgrid { border-color: var(--fc-border-color); }
