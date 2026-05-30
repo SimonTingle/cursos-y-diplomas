@@ -12,12 +12,9 @@
 <div class="flex min-h-screen flex-col">
     {{-- top bar: brand + language switcher --}}
     <header class="flex items-center justify-between px-5 py-4 sm:px-8">
-        <div class="flex items-center gap-3">
+        <div class="flex flex-col items-center gap-2">
             <img src="{{ asset('logo.png') }}" alt="RCP CANARIAS" class="h-36 w-36 rounded-lg object-contain">
-            <div>
-                <p class="text-lg font-semibold leading-tight text-white">RCP CANARIAS</p>
-                <p class="text-xs text-slate-400">{{ __('Instructors Calendar') }}</p>
-            </div>
+            <p class="text-lg font-semibold leading-tight text-white">RCP CANARIAS</p>
         </div>
         <div class="flex items-center gap-1 text-sm">
             @foreach (['en' => 'English', 'es' => 'Español'] as $code => $label)
