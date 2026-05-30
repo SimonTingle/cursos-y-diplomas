@@ -5,7 +5,7 @@
 @section('content')
     {{-- Info box (placeholder copy — real text added later) --}}
     <section class="glass p-6 sm:p-8">
-        <h2 class="mb-2 text-xl font-semibold text-white">{{ __('Welcome to ACES Point') }}</h2>
+        <h2 class="mb-2 text-xl font-semibold text-white">{{ __('Welcome to RCP CANARIAS') }}</h2>
         <p class="max-w-3xl text-sm leading-relaxed text-slate-300">
             {{ __('portal.intro_placeholder') }}
         </p>
