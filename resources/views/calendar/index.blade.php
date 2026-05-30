@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>{{ __('Instructors Calendar') }} · ACES Point</title>
+    <title>{{ __('Instructors Calendar') }} · RCP CANARIAS</title>
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
     @vite(['resources/css/app.css', 'resources/js/app.js'])
@@ -40,7 +40,7 @@
             <div class="grid h-10 w-10 place-items-center rounded-xl bg-gradient-to-br from-indigo-500 via-violet-500 to-cyan-400 text-lg font-bold text-white shadow-lg">A</div>
             <div>
                 <h1 class="text-lg font-semibold leading-tight text-white">{{ __('Instructors Calendar') }}</h1>
-                <p class="text-xs text-slate-400">ACES Point · {{ __('scheduling') }}</p>
+                <p class="text-xs text-slate-400">RCP CANARIAS · {{ __('scheduling') }}</p>
             </div>
         </div>
 
