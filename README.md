@@ -8,6 +8,8 @@ scheduling UI in a futuristic glassmorphism theme.
 > login-gated with its backend + database on the owner's server, so its exact data model
 > and visuals couldn't be observed. The schema below is a sensible reconstruction — import
 > your real data into it when ready.
+>
+> [![Laravel](https://github.com/SimonTingle/cursos-y-diplomas/actions/workflows/laravel.yml/badge.svg)](https://github.com/SimonTingle/cursos-y-diplomas/actions/workflows/laravel.yml)
 
 ## Stack
 
