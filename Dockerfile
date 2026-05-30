@@ -11,8 +11,6 @@ RUN apt-get update && apt-get install -y \
     sqlite3 \
     libsqlite3-dev \
     libzip-dev \
-    nodejs \
-    npm \
     && docker-php-ext-install \
     pdo \
     pdo_sqlite \
@@ -24,53 +22,49 @@ RUN apt-get update && apt-get install -y \
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
 # -------------------------
-# Apache config (CRITICAL for Laravel)
+# Enable Apache rewrite
 # -------------------------
 RUN a2enmod rewrite
 
-ENV APACHE_DOCUMENT_ROOT=/var/www/html/public
-
-RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/000-default.conf
-
-RUN sed -ri -e 's!/var/www/!/var/www/html/public!g' /etc/apache2/apache2.conf
+# -------------------------
+# FORCE correct Laravel public root (IMPORTANT)
+# -------------------------
+COPY docker/apache.conf /etc/apache2/sites-available/000-default.conf
 
 # -------------------------
 # App setup
 # -------------------------
 WORKDIR /var/www/html
-
 COPY . .
 
 # -------------------------
-# Install PHP deps
+# Install PHP dependencies
 # -------------------------
 RUN composer install --no-dev --optimize-autoloader --no-interaction
 
 # -------------------------
-# Frontend build (Vite)
+# Install Node properly (fixes Vite issues)
 # -------------------------
-RUN npm install && npm run build
+RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
+    && apt-get install -y nodejs
+
+RUN npm install
+RUN npm run build
 
 # -------------------------
 # SQLite safety
 # -------------------------
-RUN mkdir -p database \
-    && touch database/database.sqlite
+RUN mkdir -p /var/www/html/database \
+    && touch /var/www/html/database/database.sqlite \
+    && chown -R www-data:www-data /var/www/html/database
+# -------------------------
+# Permissions (CapRover safe)
+# -------------------------
 
 # -------------------------
-# Permissions (critical in CapRover)
+# DO NOT cache Laravel during build (important fix)
 # -------------------------
-RUN chown -R www-data:www-data /var/www/html \
-    && chmod -R 775 storage bootstrap/cache database
-
-# -------------------------
-# Laravel optimization (safe order)
-# -------------------------
-RUN php artisan config:clear || true
-RUN php artisan cache:clear || true
-RUN php artisan view:clear || true
-
-RUN php artisan storage:link || true
+# (removed config/route/view cache intentionally)
 
 # -------------------------
 # Expose Apache
@@ -78,10 +72,6 @@ RUN php artisan storage:link || true
 EXPOSE 80
 
 # -------------------------
-# Startup (safe for CapRover)
+# Runtime startup ONLY
 # -------------------------
-CMD bash -c "\
-php artisan config:cache || true && \
-php artisan route:cache || true && \
-php artisan view:cache || true && \
-apache2-foreground"
+CMD ["apache2-foreground"]
