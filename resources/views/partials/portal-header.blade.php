@@ -7,7 +7,7 @@
 {{-- Shared top bar for the portal / calendar pages --}}
 <header class="flex flex-wrap items-center justify-between gap-4 px-5 py-4 sm:px-8">
     <a href="{{ route('portal') }}" class="flex flex-col items-center gap-2">
-        <img src="{{ asset('logo.png') }}" alt="RCP CANARIAS" class="h-32 w-32 rounded-lg object-contain shadow-2xl shadow-white/50">
+        <img src="{{ asset('logo.png') }}" alt="RCP CANARIAS" class="h-32 w-32 rounded-lg object-contain shadow-2xl">
         <h1 class="text-lg font-semibold leading-tight text-white">RCP CANARIAS</h1>
     </a>
 

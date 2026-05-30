@@ -13,7 +13,7 @@
     {{-- top bar: brand + language switcher --}}
     <header class="flex items-center justify-between px-5 py-4 sm:px-8">
         <div class="flex flex-col items-center gap-2">
-            <img src="{{ asset('logo.png') }}" alt="RCP CANARIAS" class="h-36 w-36 rounded-lg object-contain shadow-2xl shadow-white/50">
+            <img src="{{ asset('logo.png') }}" alt="RCP CANARIAS" class="h-36 w-36 rounded-lg object-contain shadow-2xl">
             <p class="text-lg font-semibold leading-tight text-white">RCP CANARIAS</p>
         </div>
         <div class="flex items-center gap-1 text-sm">
