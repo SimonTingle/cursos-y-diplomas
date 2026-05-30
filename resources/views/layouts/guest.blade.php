@@ -17,7 +17,7 @@
     <body class="font-sans antialiased">
         <div class="flex min-h-screen flex-col items-center justify-center px-4 py-10">
             <div class="mb-6 flex items-center gap-3">
-                <div class="grid h-12 w-12 place-items-center rounded-2xl bg-gradient-to-br from-indigo-500 via-violet-500 to-cyan-400 text-xl font-bold text-white shadow-lg">A</div>
+                <img src="{{ asset('logo.png') }}" alt="RCP CANARIAS" class="h-12 w-12 rounded-xl object-contain">
                 <div>
                     <p class="text-lg font-semibold leading-tight text-white">RCP CANARIAS</p>
                     <p class="text-xs text-slate-400">{{ __('Instructors Calendar') }}</p>
