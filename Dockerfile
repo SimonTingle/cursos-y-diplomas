@@ -74,9 +74,14 @@ RUN mkdir -p storage/framework/cache \
     database
 
 # =========================================================
-# SQLITE SAFETY (PREVENT MISSING DB FILE)
+# SQLITE SAFETY — store DB inside the persistent storage volume
 # =========================================================
-RUN touch database/database.sqlite
+# NOTE: /var/www/html/database is NOT persistent on CapRover (and mounting it
+# would mask migrations/factories/seeders). The real DB lives under storage/,
+# which IS a persistent CapRover volume.
+RUN mkdir -p storage/app/database \
+ && touch storage/app/database/database.sqlite \
+ && touch database/database.sqlite
 
 # =========================================================
 # PERMISSIONS (FIXES 500 + LOG FAILURES)
@@ -105,22 +110,37 @@ RUN php artisan storage:link || true
 # =========================================================
 # STARTUP SCRIPT (FAILSAFE RUNTIME BOOT)
 # =========================================================
-RUN echo '#!/bin/bash\n\
-set -e\n\
-\n\
-echo "Fixing permissions..."\n\
-chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache /var/www/html/database || true\n\
-chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache /var/www/html/database || true\n\
-\n\
-echo "Running migrations..."\n\
-php artisan migrate --force || true\n\
-\n\
-echo "Clearing stale caches..."\n\
-php artisan config:clear || true\n\
-php artisan route:clear || true\n\
-\n\
-echo "Starting Apache..."\n\
-apache2-foreground\n' > /start.sh
+RUN printf '%s\n' \
+'#!/bin/bash' \
+'set -e' \
+'' \
+'echo "[boot] Ensuring persistent SQLite path exists..."' \
+'mkdir -p /var/www/html/storage/app/database' \
+'touch /var/www/html/storage/app/database/database.sqlite' \
+'' \
+'echo "[boot] Fixing permissions..."' \
+'chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache || true' \
+'chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache || true' \
+'' \
+'echo "[boot] Clearing stale caches..."' \
+'php artisan config:clear || true' \
+'php artisan route:clear || true' \
+'php artisan view:clear || true' \
+'' \
+'echo "[boot] Running migrations..."' \
+'php artisan migrate --force || echo "[boot] migrate failed (continuing)"' \
+'' \
+'echo "[boot] Seeding admin (idempotent)..."' \
+'php artisan db:seed --class=AdminUserSeeder --force || true' \
+'' \
+'echo "[boot] Streaming Laravel log to stdout..."' \
+'touch /var/www/html/storage/logs/laravel.log' \
+'chown www-data:www-data /var/www/html/storage/logs/laravel.log || true' \
+'tail -F /var/www/html/storage/logs/laravel.log &' \
+'' \
+'echo "[boot] Starting Apache..."' \
+'exec apache2-foreground' \
+> /start.sh
 
 RUN chmod +x /start.sh
 
