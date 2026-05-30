@@ -84,22 +84,15 @@ RUN chown -R www-data:www-data /var/www/html \
  && chmod -R 775 storage bootstrap/cache database
 
 # =========================================================
-# LARAVEL OPTIMIZATION (SAFE ORDER)
+# LARAVEL BUILD-TIME OPTIMISATION
 # =========================================================
-RUN php artisan config:clear || true
-RUN php artisan route:clear || true
-RUN php artisan view:clear || true
-RUN php artisan cache:clear || true
-
-RUN php artisan storage:link || true
-
-# =========================================================
-# IMPORTANT: DO NOT CACHE DURING BUILD (CapRover SAFE)
-# =========================================================
-# OLD (REMOVED SAFETY ISSUE):
-# RUN php artisan config:cache
-# RUN php artisan route:cache
-# RUN php artisan view:cache
+# Skip cache:clear — it needs DB tables that don't exist at build time.
+# config/route/view caches are file-based and safe to clear here.
+RUN php artisan config:clear || true \
+ && php artisan route:clear || true \
+ && php artisan view:clear || true \
+ && php artisan storage:link || true \
+ && truncate -s 0 storage/logs/laravel.log 2>/dev/null || true
 
 # =========================================================
 # STARTUP SCRIPT (FAILSAFE RUNTIME BOOT)
