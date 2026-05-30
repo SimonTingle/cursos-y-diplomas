@@ -1,8 +1,8 @@
 FROM php:8.3-apache
 
-# -------------------------
-# System dependencies
-# -------------------------
+# ----------------------------------------------------
+# SYSTEM DEPENDENCIES
+# ----------------------------------------------------
 RUN apt-get update && apt-get install -y \
     git \
     unzip \
@@ -11,67 +11,82 @@ RUN apt-get update && apt-get install -y \
     sqlite3 \
     libsqlite3-dev \
     libzip-dev \
+    nodejs \
+    npm \
     && docker-php-ext-install \
     pdo \
     pdo_sqlite \
     zip
 
-# -------------------------
-# Composer
-# -------------------------
+# ----------------------------------------------------
+# COMPOSER
+# ----------------------------------------------------
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
-# -------------------------
-# Enable Apache rewrite
-# -------------------------
+# ----------------------------------------------------
+# APACHE CONFIG (CRITICAL FOR LARAVEL)
+# ----------------------------------------------------
 RUN a2enmod rewrite
 
-# -------------------------
-# FORCE correct Laravel public root (IMPORTANT)
-# -------------------------
-COPY docker/apache.conf /etc/apache2/sites-available/000-default.conf
+ENV APACHE_DOCUMENT_ROOT=/var/www/html/public
 
-# -------------------------
-# App setup
-# -------------------------
+RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/000-default.conf \
+ && sed -ri -e 's!/var/www/!/var/www/html/public!g' /etc/apache2/apache2.conf
+
+# Prevent Apache warning
+RUN echo "ServerName localhost" >> /etc/apache2/apache2.conf
+
+# ----------------------------------------------------
+# WORKDIR
+# ----------------------------------------------------
 WORKDIR /var/www/html
+
+# ----------------------------------------------------
+# COPY APPLICATION
+# ----------------------------------------------------
 COPY . .
 
-# -------------------------
-# Install PHP dependencies
-# -------------------------
+# ----------------------------------------------------
+# INSTALL PHP DEPENDENCIES
+# ----------------------------------------------------
 RUN composer install --no-dev --optimize-autoloader --no-interaction
 
-# -------------------------
-# Install Node properly (fixes Vite issues)
-# -------------------------
-RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
-    && apt-get install -y nodejs
+# ----------------------------------------------------
+# INSTALL FRONTEND BUILD
+# ----------------------------------------------------
+RUN npm install && npm run build
 
-RUN npm install
-RUN npm run build
+# ----------------------------------------------------
+# SQLITE SETUP
+# ----------------------------------------------------
+RUN mkdir -p database \
+    && touch database/database.sqlite
 
-# -------------------------
-# SQLite safety
-# -------------------------
-RUN mkdir -p /var/www/html/database \
-    && touch /var/www/html/database/database.sqlite \
-    && chown -R www-data:www-data /var/www/html/database
-# -------------------------
-# Permissions (CapRover safe)
-# -------------------------
+# ----------------------------------------------------
+# PERMISSIONS (CRITICAL FIX FOR YOUR ERROR)
+# ----------------------------------------------------
+RUN mkdir -p storage/logs bootstrap/cache \
+    && chown -R www-data:www-data /var/www/html \
+    && chmod -R 775 storage bootstrap/cache database
 
-# -------------------------
-# DO NOT cache Laravel during build (important fix)
-# -------------------------
-# (removed config/route/view cache intentionally)
+# ----------------------------------------------------
+# LARAVEL SAFE CACHE (BUILD TIME ONLY)
+# ----------------------------------------------------
+RUN php artisan optimize:clear || true
 
-# -------------------------
-# Expose Apache
-# -------------------------
+# OPTIONAL (DO NOT FAIL BUILD IF MISSING ENV)
+RUN php artisan storage:link || true
+
+# ----------------------------------------------------
+# EXPOSE APACHE
+# ----------------------------------------------------
 EXPOSE 80
 
-# -------------------------
-# Runtime startup ONLY
-# -------------------------
-CMD ["apache2-foreground"]
+# ----------------------------------------------------
+# STARTUP
+# ----------------------------------------------------
+CMD bash -c "\
+php artisan migrate --force || true && \
+php artisan config:cache || true && \
+php artisan route:cache || true && \
+apache2-foreground"
