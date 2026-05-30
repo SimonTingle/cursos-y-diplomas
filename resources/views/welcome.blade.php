@@ -13,7 +13,7 @@
     {{-- top bar: brand + language switcher --}}
     <header class="flex items-center justify-between px-5 py-4 sm:px-8">
         <div class="flex items-center gap-3">
-            <img src="{{ asset('logo.png') }}" alt="RCP CANARIAS" class="h-12 w-12 rounded-lg object-contain">
+            <img src="{{ asset('logo.png') }}" alt="RCP CANARIAS" class="h-36 w-36 rounded-lg object-contain">
             <div>
                 <p class="text-lg font-semibold leading-tight text-white">RCP CANARIAS</p>
                 <p class="text-xs text-slate-400">{{ __('Instructors Calendar') }}</p>
