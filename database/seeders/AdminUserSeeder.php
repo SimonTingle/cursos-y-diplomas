@@ -13,7 +13,7 @@ class AdminUserSeeder extends Seeder
      */
     public function run(): void
     {
-        $email = env('ADMIN_EMAIL', 'admin@acespoint.test');
+        $email = env('ADMIN_EMAIL', 'admin@rcpcanarias.test');
         $password = env('ADMIN_PASSWORD', 'password');
 
         $user = User::updateOrCreate(

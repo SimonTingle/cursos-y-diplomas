@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\AuditLogController;
 use App\Http\Controllers\CalendarController;
 use App\Http\Controllers\CourseController;
 use App\Http\Controllers\EventController;
@@ -9,6 +10,7 @@ use App\Http\Controllers\InstructorController;
 use App\Http\Controllers\PdfController;
 use App\Http\Controllers\PortalController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\UserImportController;
 use App\Http\Controllers\VideoController;
 use App\Models\Course;
 use Illuminate\Support\Facades\File;
@@ -65,6 +67,15 @@ Route::middleware(['auth'])->group(function () {
         // Admin user management (accessible from profile page).
         Route::post('/admin/users', [AdminController::class, 'storeUser'])->name('admin.users.store');
         Route::delete('/admin/users/{targetUser}', [AdminController::class, 'destroyUser'])->name('admin.users.destroy');
+
+        // User import
+        Route::get('/admin/import-users', [UserImportController::class, 'showForm'])->name('admin.import-users.show');
+        Route::post('/admin/import-users', [UserImportController::class, 'import'])->name('admin.import-users.store');
+        Route::get('/admin/import-users/template', [UserImportController::class, 'downloadTemplate'])->name('admin.import-users.template');
+
+        // Audit logs
+        Route::get('/admin/audit-logs', [AuditLogController::class, 'index'])->name('admin.audit-logs.index');
+        Route::get('/admin/audit-logs/{log}', [AuditLogController::class, 'show'])->name('admin.audit-logs.show');
     });
 
     // ---- Portal content sections ----

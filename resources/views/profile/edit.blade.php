@@ -68,12 +68,22 @@
     @if ($isAdmin)
         {{-- ── Admin: Create user ──────────────────────────────────── --}}
         <section class="glass p-6 sm:p-8">
-            <div class="mb-5 flex items-center gap-3">
-                <span class="rounded-full border border-cyan-400/30 bg-cyan-400/10 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-cyan-300">Admin</span>
-                <h2 class="text-lg font-semibold text-white">{{ __('Create user') }}</h2>
+            <div class="mb-5 flex flex-wrap items-center justify-between gap-3">
+                <div class="flex items-center gap-3">
+                    <span class="rounded-full border border-cyan-400/30 bg-cyan-400/10 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-cyan-300">Admin</span>
+                    <h2 class="text-lg font-semibold text-white">{{ __('Create user') }}</h2>
+                </div>
+                <div class="flex flex-wrap gap-2">
+                    <a href="{{ route('admin.audit-logs.index') }}" class="inline-flex items-center gap-2 rounded-lg bg-slate-700/50 px-3 py-1.5 text-xs font-medium text-slate-300 transition hover:bg-slate-600/50">
+                        📋 {{ __('Audit Logs') }}
+                    </a>
+                    <a href="{{ route('admin.import-users.show') }}" class="inline-flex items-center gap-2 rounded-lg bg-indigo-500/20 px-3 py-1.5 text-xs font-medium text-indigo-300 transition hover:bg-indigo-500/30">
+                        📥 {{ __('Bulk Import') }}
+                    </a>
+                </div>
             </div>
 
-            <form method="post" action="{{ route('admin.users.store') }}" class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <form method="post" action="{{ route('admin.users.store') }}" enctype="multipart/form-data" class="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 @csrf
                 <div>
                     <label class="glass-label">{{ __('Name') }}</label>
@@ -95,13 +105,34 @@
                     <input type="password" name="password_confirmation" class="glass-input" required autocomplete="new-password">
                 </div>
                 <div>
+                    <label class="glass-label">{{ __('Phone') }}</label>
+                    <input type="tel" name="phone" value="{{ old('phone') }}" placeholder="+1 (555) 000-0000" class="glass-input">
+                    <x-input-error class="mt-1 text-xs text-rose-400" :messages="$errors->get('phone')" />
+                </div>
+                <div>
+                    <label class="glass-label">{{ __('Title') }}</label>
+                    <input type="text" name="title" value="{{ old('title') }}" placeholder="e.g., Senior Instructor" class="glass-input">
+                    <x-input-error class="mt-1 text-xs text-rose-400" :messages="$errors->get('title')" />
+                </div>
+                <div>
                     <label class="glass-label">{{ __('Role') }}</label>
                     <select name="role" class="glass-input" required>
                         <option value="instructor" @selected(old('role') === 'instructor')>{{ __('Instructor') }}</option>
                         <option value="admin" @selected(old('role') === 'admin')>{{ __('Admin') }}</option>
                     </select>
                 </div>
-                <div class="flex items-end">
+                <div>
+                    <label class="glass-label">{{ __('Avatar') }}</label>
+                    <input type="file" name="avatar" accept="image/*" class="glass-input text-slate-300 file:mr-3 file:rounded-md file:border-0 file:bg-indigo-500 file:px-3 file:py-1 file:text-xs file:font-semibold file:text-white">
+                    <p class="mt-1 text-xs text-slate-500">{{ __('Max 8 MB') }}</p>
+                    <x-input-error class="mt-1 text-xs text-rose-400" :messages="$errors->get('avatar')" />
+                </div>
+                <div class="sm:col-span-2">
+                    <label class="glass-label">{{ __('Bio') }}</label>
+                    <textarea name="bio" rows="3" placeholder="Brief biography or description" class="glass-input">{{ old('bio') }}</textarea>
+                    <x-input-error class="mt-1 text-xs text-rose-400" :messages="$errors->get('bio')" />
+                </div>
+                <div class="flex items-end sm:col-span-2">
                     <button type="submit" class="btn-primary w-full">{{ __('Create user') }}</button>
                 </div>
             </form>
@@ -111,10 +142,25 @@
         <section class="glass p-6 sm:p-8">
             <h2 class="mb-5 text-lg font-semibold text-white">{{ __('All users') }}</h2>
             @forelse ($users as $u)
-                <div class="flex items-center justify-between gap-4 border-t border-white/5 py-3 first:border-t-0">
-                    <div class="min-w-0">
-                        <p class="truncate font-medium text-white">{{ $u->name }}</p>
-                        <p class="text-xs text-slate-400">{{ $u->email }}</p>
+                <div class="flex items-center justify-between gap-4 border-t border-white/5 py-4 first:border-t-0">
+                    <div class="flex min-w-0 items-center gap-3">
+                        @if ($u->avatar_url)
+                            <img src="{{ $u->avatar_url }}" alt="{{ $u->name }}" class="h-10 w-10 rounded-full object-cover">
+                        @else
+                            <div class="flex h-10 w-10 items-center justify-center rounded-full bg-indigo-500/20 text-sm font-semibold text-indigo-300">
+                                {{ substr($u->name, 0, 1) }}
+                            </div>
+                        @endif
+                        <div class="min-w-0">
+                            <p class="truncate font-medium text-white">{{ $u->name }}</p>
+                            <p class="truncate text-xs text-slate-400">{{ $u->email }}</p>
+                            @if ($u->title)
+                                <p class="truncate text-xs text-slate-500">{{ $u->title }}</p>
+                            @endif
+                            @if ($u->phone)
+                                <p class="truncate text-xs text-slate-500">{{ $u->phone }}</p>
+                            @endif
+                        </div>
                     </div>
                     <div class="flex flex-none items-center gap-3">
                         <span class="rounded-full border px-2.5 py-0.5 text-[11px] font-semibold
