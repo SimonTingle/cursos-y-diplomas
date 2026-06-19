@@ -117,6 +117,7 @@
                 <div>
                     <label class="glass-label">{{ __('Role') }}</label>
                     <select name="role" class="glass-input" required>
+                        <option value="student" @selected(old('role', 'student') === 'student')>{{ __('Student') }}</option>
                         <option value="instructor" @selected(old('role') === 'instructor')>{{ __('Instructor') }}</option>
                         <option value="admin" @selected(old('role') === 'admin')>{{ __('Admin') }}</option>
                     </select>
@@ -164,8 +165,14 @@
                     </div>
                     <div class="flex flex-none items-center gap-3">
                         <span class="rounded-full border px-2.5 py-0.5 text-[11px] font-semibold
-                            {{ $u->isAdmin() ? 'border-cyan-400/30 text-cyan-300' : 'border-white/10 text-slate-400' }}">
-                            {{ $u->isAdmin() ? __('Admin') : __('Instructor') }}
+                            @if ($u->isAdmin())
+                                border-cyan-400/30 text-cyan-300
+                            @elseif ($u->role === 'instructor')
+                                border-amber-400/30 text-amber-300
+                            @else
+                                border-white/10 text-slate-400
+                            @endif">
+                            {{ ucfirst($u->role) }}
                         </span>
                         @unless ($u->is(auth()->user()))
                             <form method="POST" action="{{ route('admin.users.destroy', $u) }}"

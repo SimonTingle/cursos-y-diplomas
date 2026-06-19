@@ -20,7 +20,7 @@ class AdminController extends Controller
             'name'     => ['required', 'string', 'max:255'],
             'email'    => ['required', 'email', 'max:255', 'unique:users,email'],
             'password' => ['required', 'confirmed', Password::min(8)],
-            'role'     => ['required', 'in:admin,instructor'],
+            'role'     => ['required', 'in:admin,instructor,student'],
             'phone'    => ['nullable', 'string', 'max:20'],
             'title'    => ['nullable', 'string', 'max:255'],
             'bio'      => ['nullable', 'string', 'max:1000'],
