@@ -13,24 +13,27 @@ class AuditLogController extends Controller
             abort(403, __('Unauthorized to view audit logs'));
         }
 
-        $query = AuditLog::with('user')
-            ->where('model_type', 'User');
+        try {
+            $query = AuditLog::with('user')
+                ->where('model_type', 'User');
 
-        // Filter by action
-        if ($request->filter_action) {
-            $query->where('action', $request->filter_action);
+            if ($request->filter_action) {
+                $query->where('action', $request->filter_action);
+            }
+
+            if ($request->filter_date_from) {
+                $query->whereDate('created_at', '>=', $request->filter_date_from);
+            }
+
+            if ($request->filter_date_to) {
+                $query->whereDate('created_at', '<=', $request->filter_date_to);
+            }
+
+            $logs = $query->orderByDesc('created_at')->paginate(50);
+        } catch (\Throwable $e) {
+            \Log::warning('Audit logs query failed: ' . $e->getMessage());
+            $logs = new \Illuminate\Pagination\LengthAwarePaginator([], 0, 50);
         }
-
-        // Filter by date range
-        if ($request->filter_date_from) {
-            $query->whereDate('created_at', '>=', $request->filter_date_from);
-        }
-
-        if ($request->filter_date_to) {
-            $query->whereDate('created_at', '<=', $request->filter_date_to);
-        }
-
-        $logs = $query->orderByDesc('created_at')->paginate(50);
 
         return view('admin.audit-logs.index', compact('logs'));
     }
