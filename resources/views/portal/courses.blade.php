@@ -77,6 +77,7 @@
                     @endif
 
                     @if ($isAdmin)
+                        <a href="{{ route('portal.courses.manage', $course) }}" class="rounded-xl px-3 py-2 text-sm font-medium text-indigo-300 transition hover:bg-indigo-500/10">{{ __('Manage') }}</a>
                         <form method="POST" action="{{ route('portal.courses.destroy', $course) }}"
                               onsubmit="return confirm('{{ __('Delete this course?') }}')">
                             @csrf @method('DELETE')
