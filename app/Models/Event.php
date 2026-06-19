@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Event extends Model
 {
@@ -21,6 +22,21 @@ class Event extends Model
     public function instructor(): BelongsTo
     {
         return $this->belongsTo(Instructor::class);
+    }
+
+    public function galleryImages(): HasMany
+    {
+        return $this->hasMany(GalleryImage::class)->orderByDesc('is_featured')->orderByDesc('id');
+    }
+
+    public function pdfs(): HasMany
+    {
+        return $this->hasMany(Pdf::class)->orderByDesc('id');
+    }
+
+    public function videos(): HasMany
+    {
+        return $this->hasMany(Video::class)->orderByDesc('id');
     }
 
     /**

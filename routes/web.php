@@ -4,6 +4,7 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AuditLogController;
 use App\Http\Controllers\CalendarController;
 use App\Http\Controllers\CourseController;
+use App\Http\Controllers\CourseMediaController;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\GalleryController;
 use App\Http\Controllers\InstructorController;
@@ -93,6 +94,21 @@ Route::middleware(['auth'])->group(function () {
     Route::middleware('can:admin')->group(function () {
         Route::post('/portal/cursos', [CourseController::class, 'store'])->name('portal.courses.store');
         Route::delete('/portal/cursos/{course}', [CourseController::class, 'destroy'])->name('portal.courses.destroy');
+
+        // Course management
+        Route::get('/portal/cursos/{course}/gestionar', [CourseController::class, 'manage'])->name('portal.courses.manage');
+        Route::post('/portal/cursos/{course}/enroll-student', [CourseController::class, 'enrollStudent'])->name('portal.courses.enroll-student');
+        Route::delete('/portal/cursos/{course}/unenroll-student/{user}', [CourseController::class, 'unenrollStudent'])->name('portal.courses.unenroll-student');
+        Route::post('/portal/cursos/{course}/assign-instructor', [CourseController::class, 'assignInstructor'])->name('portal.courses.assign-instructor');
+
+        // Course media
+        Route::post('/portal/cursos/{course}/media/images', [CourseMediaController::class, 'storeImage'])->name('portal.course-media.store-image');
+        Route::post('/portal/cursos/{course}/media/pdfs', [CourseMediaController::class, 'storePdf'])->name('portal.course-media.store-pdf');
+        Route::post('/portal/cursos/{course}/media/videos', [CourseMediaController::class, 'storeVideo'])->name('portal.course-media.store-video');
+        Route::patch('/portal/media/gallery/{image}/featured', [CourseMediaController::class, 'toggleFeatured'])->name('portal.media.toggle-featured');
+        Route::delete('/portal/course-media/images/{image}', [CourseMediaController::class, 'destroyImage'])->name('portal.course-media.destroy-image');
+        Route::delete('/portal/course-media/pdfs/{pdf}', [CourseMediaController::class, 'destroyPdf'])->name('portal.course-media.destroy-pdf');
+        Route::delete('/portal/course-media/videos/{video}', [CourseMediaController::class, 'destroyVideo'])->name('portal.course-media.destroy-video');
 
         Route::post('/portal/videoteca', [VideoController::class, 'store'])->name('portal.videos.store');
         Route::delete('/portal/videoteca/{video}', [VideoController::class, 'destroy'])->name('portal.videos.destroy');
