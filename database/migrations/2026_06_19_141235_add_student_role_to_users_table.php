@@ -8,9 +8,10 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::table('users', function (Blueprint $table) {
-            $table->string('role')->default('student')->change();
-        });
+        // No-op: SQLite ->change() on this column forces full table rebuild,
+        // which was dropping other columns (phone, title, bio, avatar, is_active, color).
+        // DB-level default is non-essential: AdminController::storeUser and
+        // UserImportService always pass explicit role. Fresh volumes avoid the rebuild trap.
     }
 
     public function down(): void
