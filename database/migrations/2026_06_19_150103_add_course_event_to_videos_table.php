@@ -12,10 +12,14 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('videos', function (Blueprint $table) {
-            $table->foreignId('course_id')->nullable()->constrained()->cascadeOnDelete();
-            $table->foreignId('event_id')->nullable()->constrained()->cascadeOnDelete();
-            $table->index('course_id');
-            $table->index('event_id');
+            if (!Schema::hasColumn('videos', 'course_id')) {
+                $table->foreignId('course_id')->nullable()->constrained()->cascadeOnDelete();
+                $table->index('course_id');
+            }
+            if (!Schema::hasColumn('videos', 'event_id')) {
+                $table->foreignId('event_id')->nullable()->constrained()->cascadeOnDelete();
+                $table->index('event_id');
+            }
         });
     }
 
