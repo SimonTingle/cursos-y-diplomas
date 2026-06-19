@@ -118,6 +118,10 @@ class UserImportService
     private function parseJSON(UploadedFile $file): array
     {
         $content = file_get_contents($file->getRealPath());
+        if ($content === false) {
+            throw new \RuntimeException('Could not read file');
+        }
+
         $data = json_decode($content, true);
 
         if (!is_array($data)) {
@@ -126,10 +130,16 @@ class UserImportService
 
         $rows = [];
         foreach ($data as $rowNumber => $row) {
-            $rows[$rowNumber + 2] = array_map('strtolower', array_combine(
-                array_keys($row),
-                array_values($row)
-            ));
+            if (!is_array($row)) {
+                throw new \RuntimeException("Row " . ($rowNumber + 2) . " is not an object");
+            }
+
+            // Lowercase keys, not values (matching CSV behavior)
+            $normalizedRow = [];
+            foreach ($row as $key => $value) {
+                $normalizedRow[strtolower($key)] = $value;
+            }
+            $rows[$rowNumber + 2] = $normalizedRow;
         }
 
         return $rows;
