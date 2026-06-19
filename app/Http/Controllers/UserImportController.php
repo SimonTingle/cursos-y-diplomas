@@ -46,17 +46,25 @@ class UserImportController extends Controller
                 'user_agent' => $request->userAgent(),
             ]);
 
+            $createdUsersData = array_map(fn ($item) => [
+                'name' => $item['user']->name,
+                'email' => $item['user']->email,
+                'temp_password' => $item['password'],
+            ], $result->createdUsers);
+
             if ($result->hasErrors()) {
                 return back()
                     ->with('import_status', 'warning')
                     ->with('import_message', "Imported {$result->successCount} users with {$result->failureCount} errors")
                     ->with('import_errors', $result->errors)
+                    ->with('created_users', $createdUsersData)
                     ->withInput();
             }
 
             return back()
                 ->with('import_status', 'success')
-                ->with('import_message', "Successfully imported {$result->successCount} users");
+                ->with('import_message', "Successfully imported {$result->successCount} users")
+                ->with('created_users', $createdUsersData);
 
         } catch (\Exception $e) {
             return back()

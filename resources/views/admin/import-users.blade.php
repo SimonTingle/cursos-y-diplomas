@@ -33,6 +33,40 @@
             </div>
         @endif
 
+        @if (session('created_users') && count(session('created_users')) > 0)
+            <div class="mb-6 rounded-lg border border-emerald-400/30 bg-emerald-400/10 p-4">
+                <h3 class="mb-4 text-sm font-semibold text-emerald-300">{{ count(session('created_users')) }} User(s) Created</h3>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-sm">
+                        <thead class="border-b border-emerald-400/20">
+                            <tr class="text-left text-xs font-semibold text-emerald-300">
+                                <th class="px-3 py-2">Name</th>
+                                <th class="px-3 py-2">Email</th>
+                                <th class="px-3 py-2">Temporary Password</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (session('created_users') as $user)
+                                <tr class="border-t border-emerald-400/10">
+                                    <td class="px-3 py-2 text-slate-300">{{ $user['name'] }}</td>
+                                    <td class="px-3 py-2 text-slate-400">{{ $user['email'] }}</td>
+                                    <td class="px-3 py-2">
+                                        <div class="flex items-center gap-2">
+                                            <code class="rounded bg-slate-900 px-2 py-1 text-xs font-mono text-slate-300">{{ $user['temp_password'] }}</code>
+                                            <button type="button" @click="navigator.clipboard.writeText('{{ addslashes($user['temp_password']) }}'); $el.textContent = '✓ Copied'" class="text-xs text-indigo-300 hover:text-indigo-200" title="Copy to clipboard">
+                                                📋 Copy
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+                <p class="mt-4 text-xs text-slate-400">Share these passwords securely with the users. Users must change their password on first login.</p>
+            </div>
+        @endif
+
         <div class="mb-6 rounded-lg border border-slate-600/50 bg-slate-900/30 p-4">
             <h3 class="mb-3 font-medium text-slate-200">{{ __('File Format') }}</h3>
             <p class="mb-3 text-xs text-slate-400">{{ __('CSV or JSON file with the following fields (only name and email are required):') }}</p>
