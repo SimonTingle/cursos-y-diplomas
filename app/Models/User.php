@@ -3,15 +3,19 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Traits\Auditable;
 use Database\Factories\UserFactory;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Storage;
 
 class User extends Authenticatable
 {
     /** @use HasFactory<UserFactory> */
-    use HasFactory, Notifiable;
+    use HasFactory, Notifiable, Auditable;
 
     /**
      * The attributes that are mass assignable.
@@ -23,11 +27,44 @@ class User extends Authenticatable
         'email',
         'password',
         'role',
+        'phone',
+        'title',
+        'bio',
+        'avatar',
+        'is_active',
+        'color',
     ];
+
+    protected $appends = ['permissions', 'avatar_url'];
 
     public function isAdmin(): bool
     {
         return $this->role === 'admin';
+    }
+
+    public function getPermissionsAttribute(): array
+    {
+        if ($this->isAdmin()) {
+            return ['create_users', 'edit_users', 'delete_users', 'import_users', 'view_audit_logs'];
+        }
+        return [];
+    }
+
+    public function hasPermission(string $permission): bool
+    {
+        return in_array($permission, $this->permissions);
+    }
+
+    public function can(string $permission): bool
+    {
+        return $this->hasPermission($permission);
+    }
+
+    protected function avatarUrl(): Attribute
+    {
+        return Attribute::get(fn () =>
+            $this->avatar ? Storage::disk('public')->url($this->avatar) : null
+        );
     }
 
     public function courses(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
