@@ -55,11 +55,6 @@ class User extends Authenticatable
         return in_array($permission, $this->permissions);
     }
 
-    public function can(string $permission): bool
-    {
-        return $this->hasPermission($permission);
-    }
-
     protected function avatarUrl(): Attribute
     {
         return Attribute::get(fn () =>
