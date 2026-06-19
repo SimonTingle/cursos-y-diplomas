@@ -36,7 +36,7 @@ class UserImportService
                     'name'     => $row['name'],
                     'email'    => $row['email'],
                     'password' => Hash::make($password),
-                    'role'     => $row['role'] ?? 'instructor',
+                    'role'     => $row['role'] ?? 'student',
                     'phone'    => $row['phone'] ?? null,
                     'title'    => $row['title'] ?? null,
                     'bio'      => $row['bio'] ?? null,
@@ -166,8 +166,8 @@ class UserImportService
         }
 
         // Role validation
-        if (!empty($row['role']) && !in_array($row['role'], ['admin', 'instructor'])) {
-            $errors['role'][] = "Role must be either 'admin' or 'instructor'";
+        if (!empty($row['role']) && !in_array($row['role'], ['admin', 'instructor', 'student'])) {
+            $errors['role'][] = "Role must be 'admin', 'instructor', or 'student'";
         }
 
         // Phone validation
