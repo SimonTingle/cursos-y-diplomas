@@ -120,6 +120,9 @@ RUN printf '%s\n' \
 'echo "[boot] Ensuring users table columns exist (idempotent repair)..."' \
 'php artisan users:ensure-columns || echo "[boot] ensure-columns failed (continuing)"' \
 '' \
+'echo "[boot] Ensuring course media columns exist (idempotent repair)..."' \
+'php artisan schema:ensure-course-media || echo "[boot] ensure-course-media failed (continuing)"' \
+'' \
 'echo "[boot] Seeding admin (idempotent)..."' \
 'php artisan db:seed --class=AdminUserSeeder --force || true' \
 '' \

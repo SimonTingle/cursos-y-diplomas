@@ -12,11 +12,17 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('gallery_images', function (Blueprint $table) {
-            $table->foreignId('course_id')->nullable()->constrained()->cascadeOnDelete();
-            $table->foreignId('event_id')->nullable()->constrained()->cascadeOnDelete();
-            $table->boolean('is_featured')->default(false);
-            $table->index(['course_id', 'is_featured']);
-            $table->index(['event_id', 'is_featured']);
+            if (!Schema::hasColumn('gallery_images', 'course_id')) {
+                $table->foreignId('course_id')->nullable()->constrained()->cascadeOnDelete();
+                $table->index(['course_id', 'is_featured']);
+            }
+            if (!Schema::hasColumn('gallery_images', 'event_id')) {
+                $table->foreignId('event_id')->nullable()->constrained()->cascadeOnDelete();
+                $table->index(['event_id', 'is_featured']);
+            }
+            if (!Schema::hasColumn('gallery_images', 'is_featured')) {
+                $table->boolean('is_featured')->default(false);
+            }
         });
     }
 
