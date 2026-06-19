@@ -19,10 +19,8 @@ trait Auditable
                     'ip_address' => request()?->ip(),
                     'user_agent' => request()?->userAgent(),
                 ]);
-            } catch (\Exception $e) {
-                if (strpos($e->getMessage(), 'no such table: audit_logs') === false) {
-                    throw;
-                }
+            } catch (\Throwable $e) {
+                self::reportAuditFailure($e, $model, 'created');
             }
         });
 
@@ -43,10 +41,8 @@ trait Auditable
                     'ip_address' => request()?->ip(),
                     'user_agent' => request()?->userAgent(),
                 ]);
-            } catch (\Exception $e) {
-                if (strpos($e->getMessage(), 'no such table: audit_logs') === false) {
-                    throw;
-                }
+            } catch (\Throwable $e) {
+                self::reportAuditFailure($e, $model, 'updated');
             }
         });
 
@@ -61,10 +57,8 @@ trait Auditable
                     'ip_address' => request()?->ip(),
                     'user_agent' => request()?->userAgent(),
                 ]);
-            } catch (\Exception $e) {
-                if (strpos($e->getMessage(), 'no such table: audit_logs') === false) {
-                    throw;
-                }
+            } catch (\Throwable $e) {
+                self::reportAuditFailure($e, $model, 'deleted');
             }
         });
     }
@@ -76,5 +70,21 @@ trait Auditable
             fn ($key) => !in_array($key, $sensitive),
             ARRAY_FILTER_USE_KEY
         );
+    }
+
+    /**
+     * Audit logging must never break the host operation (e.g. login).
+     * The missing-table case is expected during fresh migrate/seed and stays silent.
+     */
+    private static function reportAuditFailure(\Throwable $e, $model, string $action): void
+    {
+        if (strpos($e->getMessage(), 'no such table: audit_logs') !== false) {
+            return;
+        }
+
+        \Log::warning('Audit logging failed: '.$e->getMessage(), [
+            'model' => class_basename($model),
+            'action' => $action,
+        ]);
     }
 }
