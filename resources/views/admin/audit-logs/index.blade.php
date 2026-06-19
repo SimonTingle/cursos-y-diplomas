@@ -73,23 +73,14 @@
                             <td class="px-4 py-3 text-sm text-slate-400">
                                 {{ $log->user?->name ?? 'System' }}
                             </td>
-                            <td class="px-4 py-3">
-                                @if ($log->action === 'imported')
-                                    <button type="button" x-data @click="$dispatch('open-modal', 'audit-log-{{ $log->id }}')" class="text-xs text-indigo-400 hover:text-indigo-300">
-                                        📊 {{ __('View') }}
-                                    </button>
+                            <td class="px-4 py-3 text-xs text-slate-400">
+                                @if ($log->new_values)
+                                    <code class="block max-w-xs truncate rounded bg-slate-900/50 px-2 py-1">{{ json_encode($log->new_values, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) }}</code>
                                 @else
-                                    <button type="button" x-data @click="$dispatch('open-modal', 'audit-log-{{ $log->id }}')" class="text-xs text-indigo-400 hover:text-indigo-300">
-                                        👁 {{ __('View Changes') }}
-                                    </button>
+                                    —
                                 @endif
                             </td>
                         </tr>
-
-                        {{-- Modal for viewing details --}}
-                        <div x-show="$dispatch('open-modal', 'audit-log-{{ $log->id }}')" style="display: none;">
-                            <!-- Modal content would go here -->
-                        </div>
                     @empty
                         <tr>
                             <td colspan="4" class="px-4 py-6 text-center text-sm text-slate-400">

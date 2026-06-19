@@ -14,9 +14,9 @@ trait Auditable
                 'action' => 'created',
                 'model_type' => class_basename($model),
                 'model_id' => $model->id,
-                'new_values' => $model->getAttributes(),
-                'ip_address' => request()->ip(),
-                'user_agent' => request()->userAgent(),
+                'new_values' => self::filterSensitiveFields($model->getAttributes()),
+                'ip_address' => request()?->ip(),
+                'user_agent' => request()?->userAgent(),
             ]);
         });
 
@@ -31,10 +31,10 @@ trait Auditable
                 'action' => 'updated',
                 'model_type' => class_basename($model),
                 'model_id' => $model->id,
-                'old_values' => $model->getOriginal(),
-                'new_values' => $changes,
-                'ip_address' => request()->ip(),
-                'user_agent' => request()->userAgent(),
+                'old_values' => self::filterSensitiveFields($model->getOriginal()),
+                'new_values' => self::filterSensitiveFields($changes),
+                'ip_address' => request()?->ip(),
+                'user_agent' => request()?->userAgent(),
             ]);
         });
 
@@ -44,10 +44,19 @@ trait Auditable
                 'action' => 'deleted',
                 'model_type' => class_basename($model),
                 'model_id' => $model->id,
-                'old_values' => $model->getAttributes(),
-                'ip_address' => request()->ip(),
-                'user_agent' => request()->userAgent(),
+                'old_values' => self::filterSensitiveFields($model->getAttributes()),
+                'ip_address' => request()?->ip(),
+                'user_agent' => request()?->userAgent(),
             ]);
         });
+    }
+
+    private static function filterSensitiveFields(array $values): array
+    {
+        $sensitive = ['password', 'remember_token', 'email_verified_at'];
+        return array_filter($values,
+            fn ($key) => !in_array($key, $sensitive),
+            ARRAY_FILTER_USE_KEY
+        );
     }
 }
