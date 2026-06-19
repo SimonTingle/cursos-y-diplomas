@@ -4,10 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Video extends Model
 {
-    protected $fillable = ['title', 'youtube_url'];
+    protected $fillable = ['title', 'youtube_url', 'course_id', 'event_id'];
 
     /**
      * The YouTube video id parsed from common URL shapes.
@@ -33,5 +34,15 @@ class Video extends Model
 
             return $id ? "https://www.youtube.com/embed/{$id}" : null;
         });
+    }
+
+    public function course(): BelongsTo
+    {
+        return $this->belongsTo(Course::class);
+    }
+
+    public function event(): BelongsTo
+    {
+        return $this->belongsTo(Event::class);
     }
 }
