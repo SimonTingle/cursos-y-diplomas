@@ -1,4 +1,4 @@
-# ACES Point — Instructors Calendar
+# RCPcanarias — Instructors Calendar
 
 A fully functional rebuild of the instructors calendar at `point.acesint.org/instructors-calendar`.
 Laravel 12 backend + Blade/Tailwind frontend with a FullCalendar-driven, login-gated
@@ -88,7 +88,7 @@ The admin account is created by a seeder from env vars (`.env`):
 
 ```dotenv
 ADMIN_NAME="Administrator"
-ADMIN_EMAIL=admin@acespoint.test
+ADMIN_EMAIL=admin@rcpcanarias.test
 ADMIN_PASSWORD=password        # ⚠️ change this before any non-local use
 ```
 
@@ -154,7 +154,7 @@ Edit `.env`:
 DB_CONNECTION=mysql
 DB_HOST=127.0.0.1
 DB_PORT=3306
-DB_DATABASE=acespoint
+DB_DATABASE=rcpcanarias
 DB_USERNAME=your_user
 DB_PASSWORD=your_password
 ```
