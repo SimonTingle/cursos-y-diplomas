@@ -12,7 +12,7 @@ class AdminController extends Controller
 {
     public function storeUser(Request $request)
     {
-        if (!$request->user()->can('create_users')) {
+        if (!$request->user()->hasPermission('create_users')) {
             abort(403, __('Unauthorized to create users'));
         }
 
@@ -50,7 +50,7 @@ class AdminController extends Controller
 
     public function destroyUser(Request $request, User $targetUser)
     {
-        if (!$request->user()->can('delete_users')) {
+        if (!$request->user()->hasPermission('delete_users')) {
             abort(403, __('Unauthorized to delete users'));
         }
 

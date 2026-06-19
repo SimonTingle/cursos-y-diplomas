@@ -9,7 +9,7 @@ class UserImportController extends Controller
 {
     public function showForm(Request $request)
     {
-        if (!$request->user()->can('import_users')) {
+        if (!$request->user()->hasPermission('import_users')) {
             abort(403, __('Unauthorized to import users'));
         }
 
@@ -18,7 +18,7 @@ class UserImportController extends Controller
 
     public function import(Request $request)
     {
-        if (!$request->user()->can('import_users')) {
+        if (!$request->user()->hasPermission('import_users')) {
             abort(403, __('Unauthorized to import users'));
         }
 

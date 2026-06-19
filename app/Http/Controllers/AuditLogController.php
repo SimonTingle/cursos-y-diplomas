@@ -9,7 +9,7 @@ class AuditLogController extends Controller
 {
     public function index(Request $request)
     {
-        if (!$request->user()->can('view_audit_logs')) {
+        if (!$request->user()->hasPermission('view_audit_logs')) {
             abort(403, __('Unauthorized to view audit logs'));
         }
 
@@ -37,7 +37,7 @@ class AuditLogController extends Controller
 
     public function show(AuditLog $log)
     {
-        if (!auth()->user()->can('view_audit_logs')) {
+        if (!auth()->user()->hasPermission('view_audit_logs')) {
             abort(403);
         }
 
